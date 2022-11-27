@@ -1,7 +1,7 @@
 {
   "name": "whoisworking",
   "displayName": "whoisworking",
-  "description": "",
+  "description": "VSCode Extension to watch activity status of team members.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.73.0"
@@ -10,19 +10,49 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:whoisworking.helloWorld"
+    "onStartupFinished"
   ],
-  "main": "./extension.js",
+  "main": "src/main.js",
   "contributes": {
-    "commands": [{
-      "command": "whoisworking.helloWorld",
-      "title": "Hello World"
-    }]
+    "configuration": {
+        "title": "WhoIsWorking",
+        "properties": {
+          "whoisworking.server_url": {
+            "type": "string",
+            "default": "",
+            "description": "Server URL to publish activity events against."
+          },
+          "whoisworking.user": {
+            "type": "string",
+            "default": "",
+            "description": "User to authenticate against the server"
+          },
+          "whoisworking.password": {
+            "type": "string",
+            "default": "",
+            "description": "Password for the specified User"
+          },
+          "whoisworking.inactive_timeout": {
+            "type": "number",
+            "default": 600,
+            "description": "The time in seconds after no action the user becomes inactive"
+          },
+          "whoisworking.check_activity_time": {
+            "type": "number",
+            "default": 120,
+            "description": "The interval time in seconds to check for actiity and notify updates"
+          }
+        }
+    }
   },
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
     "test": "node ./test/runTest.js"
+  },
+  "dependencies": {
+    "node-fetch@2": "^3.3.0",
+    "async-mutex": "^0.4.0"
   },
   "devDependencies": {
     "@types/vscode": "^1.73.0",
