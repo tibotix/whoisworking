@@ -1,0 +1,3 @@
+*.vsce
+node_modules/
+
