@@ -1,5 +1,7 @@
 <?php
 
+$INACTIVE_TIMEOUT = 20;
+
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     die();
 }
@@ -32,8 +34,12 @@ if ($data === null){
   <title>Activity Overview:</title>
   <style>
     p {
-        font-size: 2rem;
+        font-size: 1.5rem;
         display: inline;
+    }
+
+    .detail {
+        font-size: 1rem
     }
 
     .header {
@@ -62,11 +68,14 @@ if ($data === null){
 <?php
     foreach ($data as $key => $value) {
         echo "<p>" . $key . ": </p>";
-        if ($value === "active") {
-            echo "<p class=\"active\">" . $value . "</p>";
+        if (time() - $value >= $INACTIVE_TIMEOUT) {
+            echo "<p class=\"inactive\">inactive</p>";
         } else {
-            echo "<p class=\"inactive\">" . $value . "</p>";
+            echo "<p class=\"active\">active</p>";
         }
+        echo "<p class=\"detail\">\t(Last Activity Action at </p>";
+        echo "<p class=\"detail\">" . date("d.m.Y H:i:s", $value) . ")</p>";
+        echo "<br>";
     }
 ?>
 </div>

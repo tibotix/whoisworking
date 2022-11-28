@@ -33,17 +33,10 @@ class ServerAPI {
         }
     }
 
-    notify_active() {
+    notify_heartbeat(last_activity_action) {
         console.log("update status: active");
-        return this._post_update_with_json({status: "active"});
+        return this._post_update_with_json({last_activity_action: last_activity_action});
     }
-
-    notify_inactive() {
-        console.log("update status: inactive");
-        return this._post_update_with_json({status: "inactive"});
-    }
-
-
 }
 
 module.exports = {

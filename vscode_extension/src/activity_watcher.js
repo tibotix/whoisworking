@@ -27,19 +27,15 @@ class ActivityWatcher {
         await this.mutex.runExclusive(() => {
             this.last_activity_action = Date.now();
         });
-        console.log("on_did_activity_action end")
     }
 
     async check_activity() {
-        console.log("check activity");
         if (!this.enabled) {
             return
         }
         await this.mutex.runExclusive(() => {
-            if( Date.now() - this.last_activity_action > this.inactive_timeout) {
-                this.server_api.notify_inactive();
-            } else {
-                this.server_api.notify_active();
+            if( Date.now() - this.last_activity_action < this.inactive_timeout) {
+                this.server_api.notify_heartbeat(Math.round(this.last_activity_action/1000));
             }
         });
     }

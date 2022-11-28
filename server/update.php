@@ -34,7 +34,7 @@ function getBasicToken() {
 }
 
 $_POST = json_decode(file_get_contents("php://input"), true);
-if (!isset($_POST["status"])) {
+if (!isset($_POST["last_activity_action"])) {
     die();
 }
 
@@ -59,7 +59,7 @@ if ($lock = flock($fp, LOCK_EX)) {
         $data = array();
     }
     if ($data !== null){
-        $data[$user] = $_POST["status"];
+        $data[$user] = $_POST["last_activity_action"];
         ftruncate($fp, 0);
         rewind($fp);
         fwrite($fp, json_encode($data));

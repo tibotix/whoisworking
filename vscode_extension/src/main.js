@@ -69,13 +69,7 @@ function update_status_bar_item(connectivity_status) {
 	status_bar_item.show();
 }
 
-function deactivate() {
-	// TODO: maybe make it the responsibility of php to switch to inactive state
-	// -> this extension only publishes alive events
-	// -> php code decides after which time one is not alive anymore
-	// make new branch for this
-	server_api.notify_inactive();
-}
+function deactivate() {}
 
 module.exports = {
 	activate,
