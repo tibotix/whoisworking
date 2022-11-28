@@ -35,12 +35,12 @@ class ServerAPI {
 
     notify_active() {
         console.log("update status: active");
-        this._post_update_with_json({status: "active"});
+        return this._post_update_with_json({status: "active"});
     }
 
     notify_inactive() {
         console.log("update status: inactive");
-        this._post_update_with_json({status: "inactive"});
+        return this._post_update_with_json({status: "inactive"});
     }
 
 
