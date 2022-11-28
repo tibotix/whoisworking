@@ -67,14 +67,18 @@ if ($data === null){
 <div>
 <?php
     foreach ($data as $key => $value) {
+        $last_activity_action = $value->last_activity_action;
         echo "<p>" . $key . ": </p>";
-        if (time() - $value >= $INACTIVE_TIMEOUT) {
+        if (time() - $last_activity_action >= $INACTIVE_TIMEOUT) {
             echo "<p class=\"inactive\">inactive</p>";
         } else {
             echo "<p class=\"active\">active</p>";
         }
         echo "<p class=\"detail\">\t(Last Activity Action at </p>";
-        echo "<p class=\"detail\">" . date("d.m.Y H:i:s", $value) . ")</p>";
+        echo "<p class=\"detail\">" . date("d.m.Y H:i:s", $last_activity_action) . ")</p>";
+        if (property_exists($value, "message")){
+            echo "<p class=\"detail\">\tMessage: " . $value->message . "</p>";
+        }
         echo "<br>";
     }
 ?>

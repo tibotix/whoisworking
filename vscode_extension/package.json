@@ -36,6 +36,10 @@
       {
         "command": "whoisworking.disable",
         "title": "WhoIsWorking: Disable"
+      },
+      {
+        "command": "whoisworking.add_inactive_delay",
+        "title": "WhoIsWorking: Add Inactive Delay"
       }
     ],
     "configuration": {

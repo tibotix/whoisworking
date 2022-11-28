@@ -13,8 +13,13 @@ function update_activity_check_interval() {
 		clearInterval(activity_check_interval);
 	}
 	activity_check_interval = setInterval(() => {
-		activity_watcher.check_activity();
-		update_status_bar_item(server_api.connectivity_status);
+		activity_watcher.add_inactive_delay(-(conf.get("checkActivityTime")*1000)).then((inactive_delay) => {
+			if (inactive_delay > 0) {
+				activity_watcher.on_did_activity_action();
+			}
+			update_status_bar_item(inactive_delay);
+			activity_watcher.check_activity();
+		});
 	}, conf.get("checkActivityTime")*1000);
 }
 
@@ -49,23 +54,32 @@ function activate(context) {
 		activity_watcher.enable();
 		vscode.window.showInformationMessage("WhoIsWorking is enabled.");
 	}));
-	// TODO: add functionality to add inactive delay
+	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.add_inactive_delay", () => {
+		vscode.window.showInputBox({
+			title: "Enter Delay in minutes"
+		}).then((val) => {
+			if (isNaN(Number(val))) {
+				vscode.window.showErrorMessage("\"" + val + "\" is not a number");
+				return;
+			}
+			activity_watcher.add_inactive_delay(Number(val)*60*1000).then((inactive_delay) => {
+				vscode.window.showInformationMessage("For the next " + inactive_delay / 60 / 1000 + " minutes you appear as active.");
+				update_status_bar_item(inactive_delay);
+			});
+		});
+	}));
 
-	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(activity_watcher.on_did_activity_action, activity_watcher));
-	context.subscriptions.push(vscode.workspace.onDidCreateFiles(activity_watcher.on_did_activity_action, activity_watcher));
-	context.subscriptions.push(vscode.workspace.onDidDeleteFiles(activity_watcher.on_did_activity_action, activity_watcher));
-	context.subscriptions.push(vscode.workspace.onDidRenameFiles(activity_watcher.on_did_activity_action, activity_watcher));
-	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(activity_watcher.on_did_activity_action, activity_watcher));
+	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(() => {activity_watcher.on_did_activity_action()}, activity_watcher));
+	context.subscriptions.push(vscode.workspace.onDidCreateFiles(() => {activity_watcher.on_did_activity_action()}, activity_watcher));
+	context.subscriptions.push(vscode.workspace.onDidDeleteFiles(() => {activity_watcher.on_did_activity_action()}, activity_watcher));
+	context.subscriptions.push(vscode.workspace.onDidRenameFiles(() => {activity_watcher.on_did_activity_action()}, activity_watcher));
+	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(() => {activity_watcher.on_did_activity_action()}, activity_watcher));
 	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(update_configuration));
 	update_activity_check_interval();
 }
 
-function update_status_bar_item(connectivity_status) {
-	if (connectivity_status == true) {
-		status_bar_item.text = "C"
-	} else {
-		status_bar_item.text = "NC"
-	}
+function update_status_bar_item(inactive_delay) {
+	status_bar_item.text = String(Math.ceil(inactive_delay/60/1000));
 	status_bar_item.show();
 }
 

@@ -59,7 +59,7 @@ if ($lock = flock($fp, LOCK_EX)) {
         $data = array();
     }
     if ($data !== null){
-        $data[$user] = $_POST["last_activity_action"];
+        $data[$user] = $_POST;
         ftruncate($fp, 0);
         rewind($fp);
         fwrite($fp, json_encode($data));
