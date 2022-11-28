@@ -88,6 +88,9 @@ function activate(context) {
 			activity_watcher.add_inactive_delay(Number(val)*60*1000).then((inactive_delay) => {
 				vscode.window.showInformationMessage("For the next " + inactive_delay / 60 / 1000 + " minutes you appear as active.");
 				update_status_bar_item(inactive_delay);
+				activity_watcher.on_did_activity_action().then(() => {
+					activity_watcher.check_activity();
+				})
 			});
 		});
 	}));
@@ -102,7 +105,7 @@ function activate(context) {
 }
 
 function update_status_bar_item(inactive_delay) {
-	status_bar_item.text = String(Math.ceil(inactive_delay/60/1000));
+	status_bar_item.text = "$(clock) " + String(Math.ceil(inactive_delay/60/1000));
 	status_bar_item.show();
 }
 
