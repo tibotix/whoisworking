@@ -48,19 +48,25 @@ function activate(context) {
 	update_status_bar_item(server_api.connectivity_status);
 
 	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.disable", () => {
-		activity_watcher.disable();
-		vscode.window.showInformationMessage("WhoIsWorking is disabled.");
+		activity_watcher.on_did_activity_action().then(() => {
+			activity_watcher.disable().then(() => {
+				vscode.window.showInformationMessage("WhoIsWorking is disabled.");
+			});
+		});
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.enable", () => {
-		activity_watcher.enable();
-		vscode.window.showInformationMessage("WhoIsWorking is enabled.");
+		activity_watcher.on_did_activity_action().then(() => {
+			activity_watcher.enable().then(() => {
+				vscode.window.showInformationMessage("WhoIsWorking is enabled.");
+			});
+		});
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.set_message", () => {
 		vscode.window.showInputBox({
 			title: "Enter Message"
 		}).then((val) => {
-			activity_watcher.set_message(val).then(() => {
-				activity_watcher.on_did_activity_action().then(() => {
+			activity_watcher.on_did_activity_action().then(() => {
+				activity_watcher.set_message(val).then(() => {
 					activity_watcher.check_activity().then(() => {
 						vscode.window.showInformationMessage("Message set successfully.");
 					});
@@ -69,8 +75,8 @@ function activate(context) {
 		});
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.clear_message", () => {
-		activity_watcher.set_message("").then(() => {
-			activity_watcher.on_did_activity_action().then(() => {
+		activity_watcher.on_did_activity_action().then(() => {
+			activity_watcher.set_message("").then(() => {
 				activity_watcher.check_activity().then(() => {
 					vscode.window.showInformationMessage("Message cleared.");
 				});
@@ -85,12 +91,20 @@ function activate(context) {
 				vscode.window.showErrorMessage("\"" + val + "\" is not a number");
 				return;
 			}
-			activity_watcher.add_inactive_delay(Number(val)*60*1000).then((inactive_delay) => {
-				vscode.window.showInformationMessage("For the next " + inactive_delay / 60 / 1000 + " minutes you appear as active.");
-				update_status_bar_item(inactive_delay);
-				activity_watcher.on_did_activity_action().then(() => {
+			activity_watcher.on_did_activity_action().then(() => {
+				activity_watcher.add_inactive_delay(Number(val)*60*1000).then((inactive_delay) => {
+					vscode.window.showInformationMessage("For the next " + inactive_delay / 60 / 1000 + " minutes you appear as active.");
+					update_status_bar_item(inactive_delay);
 					activity_watcher.check_activity();
 				})
+			});
+		});
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.clear_inactive_delay", () => {
+		activity_watcher.on_did_activity_action().then(() => {
+			activity_watcher.set_inactive_delay(0).then(() => {
+				update_status_bar_item(0);
+				vscode.window.showInformationMessage("Inactive Delay cleared.");
 			});
 		});
 	}));

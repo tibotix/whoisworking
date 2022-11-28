@@ -39,6 +39,12 @@ class ActivityWatcher {
         });
     }
 
+    set_inactive_delay(inactive_delay) {
+        return this.mutex.runExclusive(() => {
+            this.inactive_delay = inactive_delay;
+        });
+    }
+
     set_inactive_timeout(inactive_timeout) {
         return this.mutex.runExclusive(() => {
             this.inactive_timeout = inactive_timeout;

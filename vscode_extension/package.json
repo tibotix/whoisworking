@@ -48,6 +48,10 @@
       {
         "command": "whoisworking.add_inactive_delay",
         "title": "WhoIsWorking: Add Inactive Delay"
+      },
+      {
+        "command": "whoisworking.clear_inactive_delay",
+        "title": "WhoIsWorking: Clear Inactive Delay"
       }
     ],
     "configuration": {
