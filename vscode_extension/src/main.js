@@ -24,6 +24,7 @@ function update_activity_check_interval() {
 }
 
 function update_configuration(event) {
+	activity_watcher.on_did_activity_action();
 	conf = vscode.workspace.getConfiguration("whoisworking");
 	if (event.affectsConfiguration("whoisworking.checkActivityTime")){
 		update_activity_check_interval();
@@ -53,6 +54,28 @@ function activate(context) {
 	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.enable", () => {
 		activity_watcher.enable();
 		vscode.window.showInformationMessage("WhoIsWorking is enabled.");
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.set_message", () => {
+		vscode.window.showInputBox({
+			title: "Enter Message"
+		}).then((val) => {
+			activity_watcher.set_message(val).then(() => {
+				activity_watcher.on_did_activity_action().then(() => {
+					activity_watcher.check_activity().then(() => {
+						vscode.window.showInformationMessage("Message set successfully.");
+					});
+				});
+			});
+		});
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.clear_message", () => {
+		activity_watcher.set_message("").then(() => {
+			activity_watcher.on_did_activity_action().then(() => {
+				activity_watcher.check_activity().then(() => {
+					vscode.window.showInformationMessage("Message cleared.");
+				});
+			});
+		});
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.add_inactive_delay", () => {
 		vscode.window.showInputBox({

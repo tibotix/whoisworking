@@ -38,6 +38,14 @@
         "title": "WhoIsWorking: Disable"
       },
       {
+        "command": "whoisworking.set_message",
+        "title": "WhoIsWorking: Set Message"
+      },
+      {
+        "command": "whoisworking.clear_message",
+        "title": "WhoIsWorking: Clear Message"
+      },
+      {
         "command": "whoisworking.add_inactive_delay",
         "title": "WhoIsWorking: Add Inactive Delay"
       }
