@@ -12,7 +12,7 @@ class ServerAPI {
     }
 
     set_credentials(user, pass) {
-        this.auth_header = "Basic " + btoa(user + ":" + pass);
+        this.auth_header = "Basic " + Buffer.from(user + ":" + pass).toString("base64");
     }
 
     _post_update_with_json(json_data) {
