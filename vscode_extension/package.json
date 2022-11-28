@@ -1,48 +1,72 @@
 {
   "name": "whoisworking",
-  "displayName": "whoisworking",
+  "displayName": "WhoIsWorking",
   "description": "VSCode Extension to watch activity status of team members.",
   "version": "0.0.1",
+  "publisher": "Tibotix",
   "engines": {
     "vscode": "^1.73.0"
   },
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "actiity",
+    "tracker",
+    "online"
+  ],
+  "repository": {
+		"type": "git",
+		"url": "https://github.com/tibotix/whoisworking.git"
+	},
+	"bugs": {
+		"url": "https://github.com/tibotix/whoisworking/issues"
+	},
+	"homepage": "https://github.com/tibotix/whoisworking/blob/master/README.md",
   "activationEvents": [
     "onStartupFinished"
   ],
   "main": "src/main.js",
   "contributes": {
+    "commands": [
+      {
+        "command": "whoisworking.enable",
+        "title": "Enable"
+      },
+      {
+        "command": "whoisworking.disable",
+        "title": "Disable"
+      }
+    ],
     "configuration": {
-        "title": "WhoIsWorking",
-        "properties": {
-          "whoisworking.server_url": {
-            "type": "string",
-            "default": "",
-            "description": "Server URL to publish activity events against."
-          },
-          "whoisworking.user": {
-            "type": "string",
-            "default": "",
-            "description": "User to authenticate against the server"
-          },
-          "whoisworking.password": {
-            "type": "string",
-            "default": "",
-            "description": "Password for the specified User"
-          },
-          "whoisworking.inactive_timeout": {
-            "type": "number",
-            "default": 600,
-            "description": "The time in seconds after no action the user becomes inactive"
-          },
-          "whoisworking.check_activity_time": {
-            "type": "number",
-            "default": 120,
-            "description": "The interval time in seconds to check for actiity and notify updates"
-          }
+      "title": "WhoIsWorking",
+      "properties": {
+        "whoisworking.serverUrl": {
+          "type": "string",
+          "default": "",
+          "description": "Server URL to publish activity events against."
+        },
+        "whoisworking.username": {
+          "type": "string",
+          "default": "",
+          "description": "User to authenticate against the server"
+        },
+        "whoisworking.password": {
+          "type": "string",
+          "default": "",
+          "description": "Password for the specified User"
+        },
+        "whoisworking.inactiveTimeout": {
+          "type": "number",
+          "default": 600,
+          "description": "The time in seconds after no action the user becomes inactive"
+        },
+        "whoisworking.checkActivityTime": {
+          "type": "number",
+          "default": 120,
+          "description": "The interval time in seconds to check for actiity and notify updates"
         }
+      }
     }
   },
   "scripts": {
@@ -51,18 +75,18 @@
     "test": "node ./test/runTest.js"
   },
   "dependencies": {
-    "node-fetch@2": "^3.3.0",
-    "async-mutex": "^0.4.0"
+    "async-mutex": "^0.4.0",
+    "node-fetch": "^2.6.7"
   },
   "devDependencies": {
-    "@types/vscode": "^1.73.0",
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.0",
     "@types/node": "16.x",
+    "@types/vscode": "^1.73.0",
+    "@vscode/test-electron": "^2.2.0",
     "eslint": "^8.26.0",
     "glob": "^8.0.3",
     "mocha": "^10.1.0",
-    "typescript": "^4.8.4",
-    "@vscode/test-electron": "^2.2.0"
+    "typescript": "^4.8.4"
   }
 }

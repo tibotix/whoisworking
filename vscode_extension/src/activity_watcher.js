@@ -4,22 +4,42 @@ class ActivityWatcher {
     constructor(server_api, inactive_timeout) {
         this.server_api = server_api;
         this.inactive_timeout = inactive_timeout;
-        this.last_activity_action_mutex = new Mutex();
+        this.mutex = new Mutex();
+        this.enabled = true;
         this.last_activity_action = Date.now();
     }
 
-    async on_did_activity_action(event) {
-        await this.last_activity_action_mutex.runExclusive(() => {
-            this.last_activity_action = Date.now();
+    disable() {
+        this.enabled = false;
+    }
+
+    enable() {
+        this.enabled = true;
+    }
+
+    async set_inactive_timeout(inactive_timeout) {
+        await this.mutex.runExclusive(() => {
+            this.inactive_timeout = inactive_timeout;
         });
     }
 
+    async on_did_activity_action(event) {
+        await this.mutex.runExclusive(() => {
+            this.last_activity_action = Date.now();
+        });
+        console.log("on_did_activity_action end")
+    }
+
     async check_activity() {
-        await this.last_activity_action_mutex.runExclusive(() => {
+        console.log("check activity");
+        if (!this.enabled) {
+            return
+        }
+        await this.mutex.runExclusive(() => {
             if( Date.now() - this.last_activity_action > this.inactive_timeout) {
                 this.server_api.notify_inactive();
             } else {
-                this.server_api.notifiy_active();
+                this.server_api.notify_active();
             }
         });
     }

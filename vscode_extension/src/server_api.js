@@ -2,29 +2,46 @@ const fetch = require('node-fetch');
 
 class ServerAPI {
     constructor(server_url, user, pass) {
-        this.server_url = server_url;
-        this.auth_header = "Bearer " + user + ":" + pass;
+        this.set_server_url(server_url);
+        this.set_credentials(user, pass);
         this.connectivity_status = false;
+    }
+
+    set_server_url(server_url) {
+        this.server_url = server_url;
+    }
+
+    set_credentials(user, pass) {
+        this.auth_header = "Basic " + btoa(user + ":" + pass);
+        console.log("auth header: " + this.auth_header);
     }
 
     update_connectivity_status_from_response(response) {
         this.connectivity_status = response.ok;
     }
 
-    notifiy_active() {
-        fetch(new URL("update", this.server_url), {
-            method: "POST",
-            body: JSON.stringify({status: "active"}),
-            headers: {"Content-Type": "application/json", "Authorization": this.auth_header}
-        }).then(this.update_connectivity_status_from_response)
+    _post_update_with_json(json_data) {
+        try {
+            return fetch(new URL("update", this.server_url), {
+                method: "POST",
+                body: JSON.stringify(json_data),
+                headers: {"Content-Type": "application/json", "Authorization": this.auth_header}
+            }).then(
+                this.update_connectivity_status_from_response
+            ).catch((_) => {this.connectivity_status = false});
+        } catch (TypeError) {
+            this.connectivity_status = false;
+        }
     }
 
-    notifiy_inactive() {
-        fetch(new URL("update", this.server_url), {
-            method: "POST",
-            body: JSON.stringify({status: "incative"}),
-            headers: {"Content-Type": "application/json", "Authorization": this.auth_header}
-        }).then(this.update_connectivity_status_from_response);
+    notify_active() {
+        console.log("update status: active");
+        this._post_update_with_json({status: "active"});
+    }
+
+    notify_inactive() {
+        console.log("update status: inactive");
+        this._post_update_with_json({status: "inactive"});
     }
 
 
