@@ -17,6 +17,7 @@ jobs:
         with:
           node-version: 18.x
       - run: npm install
+        working-directory: vscode_extension
       
       - name: Install vsce
         run: npm install -g vsce
@@ -24,6 +25,7 @@ jobs:
       - name: Package Extension
         working-directory: vscode_extension
         run: vsce package
+
       - name: Upload Extension
         uses: actions/upload-artifact@v3
         with:
