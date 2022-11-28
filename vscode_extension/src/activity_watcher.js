@@ -12,15 +12,21 @@ class ActivityWatcher {
     }
 
     disable() {
-        this.enabled = false;
+        return this.mutex.runExclusive(() => {
+            this.enabled = false;
+        });
     }
 
     enable() {
-        this.enabled = true;
+        return this.mutex.runExclusive(() => {
+            this.enabled = true;
+        });
     }
 
     set_message(message) {
-        this.message = message;
+        return this.mutex.runExclusive(() => {
+            this.message = message;
+        });
     }
 
     add_inactive_delay(inactive_delay) {
