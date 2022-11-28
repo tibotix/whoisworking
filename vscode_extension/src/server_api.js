@@ -29,7 +29,6 @@ class ServerAPI {
     }
 
     notify_heartbeat(data) {
-        console.log("update status: active");
         return this._post_update_with_json(data);
     }
 }
