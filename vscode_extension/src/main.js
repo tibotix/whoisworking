@@ -49,6 +49,7 @@ function activate(context) {
 		activity_watcher.enable();
 		vscode.window.showInformationMessage("WhoIsWorking is enabled.");
 	}));
+	// TODO: add functionality to add inactive delay
 
 	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(activity_watcher.on_did_activity_action, activity_watcher));
 	context.subscriptions.push(vscode.workspace.onDidCreateFiles(activity_watcher.on_did_activity_action, activity_watcher));

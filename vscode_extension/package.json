@@ -31,11 +31,11 @@
     "commands": [
       {
         "command": "whoisworking.enable",
-        "title": "Enable"
+        "title": "WhoIsWorking: Enable"
       },
       {
         "command": "whoisworking.disable",
-        "title": "Disable"
+        "title": "WhoIsWorking: Disable"
       }
     ],
     "configuration": {

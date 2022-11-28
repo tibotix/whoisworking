@@ -13,7 +13,6 @@ class ServerAPI {
 
     set_credentials(user, pass) {
         this.auth_header = "Basic " + btoa(user + ":" + pass);
-        console.log("auth header: " + this.auth_header);
     }
 
     update_connectivity_status_from_response(response) {

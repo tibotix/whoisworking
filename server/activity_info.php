@@ -30,14 +30,43 @@ if ($data === null){
 <html>
 <head>
   <title>Activity Overview:</title>
+  <style>
+    p {
+        font-size: 2rem;
+        display: inline;
+    }
+
+    .header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .active {
+        color: green;
+    }
+
+    .inactive {
+        color: red;
+    }
+  </style>
 </head>
 
 <body>
+<div class="header">
 <h1>Activity Overview</h1>
+</div>
+
 <div>
 <?php
     foreach ($data as $key => $value) {
-        echo "<p>" . $key . ": " . $value . "</p>";
+        echo "<p>" . $key . ": </p>";
+        if ($value === "active") {
+            echo "<p class=\"active\">" . $value . "</p>";
+        } else {
+            echo "<p class=\"inactive\">" . $value . "</p>";
+        }
     }
 ?>
 </div>
