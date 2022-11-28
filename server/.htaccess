@@ -1,0 +1,11 @@
+AuthUserFile <path-to-htpasswd>
+AuthGroupFile /dev/null
+AuthName 'bitte Zugangsdaten eingeben'
+AuthType Basic
+require valid-user
+
+Options +FollowSymLinks
+RewriteEngine on
+
+RewriteRule ^update$ update.php [QSA]
+RewriteRule ^info$ activity_info.php
