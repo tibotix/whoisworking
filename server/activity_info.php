@@ -68,7 +68,7 @@ if ($data === null){
 <?php
     foreach ($data as $key => $value) {
         $last_activity_action = $value->last_activity_action;
-        echo "<p>" . $key . ": </p>";
+        echo "<p>" . htmlentities($key) . ": </p>";
         if (time() - $last_activity_action >= $INACTIVE_TIMEOUT) {
             echo "<p class=\"inactive\">inactive</p>";
         } else {
