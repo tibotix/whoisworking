@@ -77,7 +77,7 @@ if ($data === null){
         echo "<p class=\"detail\">\t(Last Activity Action at </p>";
         echo "<p class=\"detail\">" . date("d.m.Y H:i:s", $last_activity_action) . ")</p>";
         if (property_exists($value, "message")){
-            echo "<p class=\"detail\">\tMessage: " . $value->message . "</p>";
+            echo "<p class=\"detail\">\tMessage: " . htmlentities($value->message) . "</p>";
         }
         echo "<br>";
     }
