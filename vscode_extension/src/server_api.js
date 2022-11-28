@@ -15,18 +15,13 @@ class ServerAPI {
         this.auth_header = "Basic " + btoa(user + ":" + pass);
     }
 
-    update_connectivity_status_from_response(response) {
-        this.connectivity_status = response.ok;
-    }
-
     _post_update_with_json(json_data) {
         try {
             return fetch(new URL("update", this.server_url), {
                 method: "POST",
                 body: JSON.stringify(json_data),
                 headers: {"Content-Type": "application/json", "Authorization": this.auth_header}
-            }).then(
-                this.update_connectivity_status_from_response
+            }).then((response) => {this.connectivity_status = response.ok} 
             ).catch((_) => {this.connectivity_status = false});
         } catch (TypeError) {
             this.connectivity_status = false;
