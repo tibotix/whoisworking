@@ -1,12 +1,13 @@
-name: Package VSCode Extension
+name: Create Release
 on:
-  release:
-    types: [created]
-  workflow_dispatch:
+  push:
+    tags:
+      - "v*.*.*"
+  # workflow_dispatch:
 
 
 jobs:
-  package:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,6 +17,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
+
       - run: npm install
         working-directory: vscode_extension
       
@@ -25,10 +27,9 @@ jobs:
       - name: Package Extension
         working-directory: vscode_extension
         run: vsce package
-
-      - name: Upload Extension
-        uses: actions/upload-artifact@v3
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: whoisworking.vsix
-          path: vscode_extension/whoisworking*.vsix
+          files: vscode_extension/whoisworking*.vsix
           
