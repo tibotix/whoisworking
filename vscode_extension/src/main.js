@@ -92,6 +92,10 @@ function activate(context) {
 		vscode.window.showInputBox({
 			title: "Enter Break Time in minutes"
 		}).then((val) => {
+			if (val === "") {
+				vscode.window.showErrorMessage("Please enter a number");
+				return;
+			}
 			if (isNaN(Number(val))) {
 				vscode.window.showErrorMessage("\"" + val + "\" is not a number");
 				return;
