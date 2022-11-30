@@ -16,19 +16,27 @@ class ServerAPI {
     }
 
     _post_update_with_json(json_data) {
-        try {
-            return fetch(new URL("update", this.server_url), {
-                method: "POST",
-                body: JSON.stringify(json_data),
-                headers: {"Content-Type": "application/json", "Authorization": this.auth_header}
-            }).then((response) => {this.connectivity_status = response.ok} 
-            ).catch((_) => {this.connectivity_status = false});
-        } catch (TypeError) {
-            this.connectivity_status = false;
-        }
+        return new Promise((resolve, reject) => {
+            try {
+                return fetch(new URL("update", this.server_url), {
+                    method: "POST",
+                    body: JSON.stringify(json_data),
+                    headers: { "Content-Type": "application/json", "Authorization": this.auth_header }
+                }).then((response) => {
+                    this.connectivity_status = response.ok;
+                    resolve();
+                }).catch((reason) => {
+                    this.connectivity_status = false;
+                    reject(reason);
+                });
+            } catch (error) {
+                this.connectivity_status = false;
+                reject(error);
+            }
+        });
     }
 
-    notify_heartbeat(data) {
+    post_update(data) {
         return this._post_update_with_json(data);
     }
 }

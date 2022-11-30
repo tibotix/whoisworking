@@ -11,24 +11,28 @@
     "Other"
   ],
   "keywords": [
-    "actiity",
+    "activity",
     "tracker",
     "online"
   ],
   "repository": {
-		"type": "git",
-		"url": "https://github.com/tibotix/whoisworking.git"
-	},
-	"bugs": {
-		"url": "https://github.com/tibotix/whoisworking/issues"
-	},
-	"homepage": "https://github.com/tibotix/whoisworking/blob/master/README.md",
+    "type": "git",
+    "url": "https://github.com/tibotix/whoisworking.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tibotix/whoisworking/issues"
+  },
+  "homepage": "https://github.com/tibotix/whoisworking/blob/master/README.md",
   "activationEvents": [
     "onStartupFinished"
   ],
   "main": "src/main.js",
   "contributes": {
     "commands": [
+      {
+        "command": "whoisworking.toggle",
+        "title": "WhoIsWorking: Toggle"
+      },
       {
         "command": "whoisworking.enable",
         "title": "WhoIsWorking: Enable"
@@ -46,17 +50,22 @@
         "title": "WhoIsWorking: Clear Message"
       },
       {
-        "command": "whoisworking.add_inactive_delay",
-        "title": "WhoIsWorking: Add Inactive Delay"
+        "command": "whoisworking.start_break",
+        "title": "WhoIsWorking: Start Break"
       },
       {
-        "command": "whoisworking.clear_inactive_delay",
-        "title": "WhoIsWorking: Clear Inactive Delay"
+        "command": "whoisworking.stop_break",
+        "title": "WhoIsWorking: Stop Break"
       }
     ],
     "configuration": {
       "title": "WhoIsWorking",
       "properties": {
+        "whoisworking.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Wether working status should be sent to the server."
+        },
         "whoisworking.serverUrl": {
           "type": "string",
           "default": "",

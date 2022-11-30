@@ -1,6 +1,6 @@
 const vscode = require('vscode');
-const {ServerAPI} = require('./server_api')
-const {ActivityWatcher} = require('./activity_watcher')
+const { ServerAPI } = require('./server_api')
+const { ActivityWatcher } = require('./activity_watcher')
 
 let conf = vscode.workspace.getConfiguration("whoisworking");
 let status_bar_item;
@@ -13,50 +13,55 @@ function update_activity_check_interval() {
 		clearInterval(activity_check_interval);
 	}
 	activity_check_interval = setInterval(() => {
-		activity_watcher.add_inactive_delay(-(conf.get("checkActivityTime")*1000)).then((inactive_delay) => {
-			if (inactive_delay > 0) {
-				activity_watcher.on_did_activity_action();
-			}
-			update_status_bar_item(inactive_delay);
-			activity_watcher.check_activity();
-		});
-	}, conf.get("checkActivityTime")*1000);
+		activity_watcher.check_activity();
+	}, conf.get("checkActivityTime") * 1000);
 }
 
 function update_configuration(event) {
 	activity_watcher.on_did_activity_action();
 	conf = vscode.workspace.getConfiguration("whoisworking");
-	if (event.affectsConfiguration("whoisworking.checkActivityTime")){
+	if (event.affectsConfiguration("whoisworking.enabled")) {
+		activity_watcher.set_enabled(conf.get("enabled"));
+		update_status_bar_item();
+	}
+	if (event.affectsConfiguration("whoisworking.checkActivityTime")) {
 		update_activity_check_interval();
 	}
-	if (event.affectsConfiguration("whoisworking.inactiveTimeout")){
-		activity_watcher.set_inactive_timeout(conf.get("inactiveTimeout")*1000);
+	if (event.affectsConfiguration("whoisworking.inactiveTimeout")) {
+		activity_watcher.set_inactive_timeout(conf.get("inactiveTimeout") * 1000);
 	}
-	if (event.affectsConfiguration("whoisworking.serverUrl")){
+	if (event.affectsConfiguration("whoisworking.serverUrl")) {
 		server_api.set_server_url(conf.get("serverUrl"));
 	}
-	if (event.affectsConfiguration("whoisworking.username") || event.affectsConfiguration("whoisworking.password")){
+	if (event.affectsConfiguration("whoisworking.username") || event.affectsConfiguration("whoisworking.password")) {
 		server_api.set_credentials(conf.get("username"), conf.get("password"));
 	}
 }
 
 function activate(context) {
 	server_api = new ServerAPI(conf.get("serverUrl"), conf.get("username"), conf.get("password"));
-	activity_watcher = new ActivityWatcher(server_api, conf.get("inactiveTimeout")*1000);
+	activity_watcher = new ActivityWatcher(server_api, conf.get("inactiveTimeout") * 1000);
+	activity_watcher.set_enabled(conf.get("enabled"));
 
 	status_bar_item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 5)
-	update_status_bar_item(server_api.connectivity_status);
+	status_bar_item.command = "whoisworking.toggle";
+	update_status_bar_item();
 
+	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.toggle", () => {
+		activity_watcher.on_did_activity_action().then(() => {
+			conf.update("enabled", !conf.get("enabled"), true);
+		});
+	}));
 	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.disable", () => {
 		activity_watcher.on_did_activity_action().then(() => {
-			activity_watcher.disable().then(() => {
+			conf.update("enabled", false, true).then(() => {
 				vscode.window.showInformationMessage("WhoIsWorking is disabled.");
 			});
 		});
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.enable", () => {
 		activity_watcher.on_did_activity_action().then(() => {
-			activity_watcher.enable().then(() => {
+			conf.update("enabled", true, true).then(() => {
 				vscode.window.showInformationMessage("WhoIsWorking is enabled.");
 			});
 		});
@@ -83,47 +88,55 @@ function activate(context) {
 			});
 		});
 	}));
-	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.add_inactive_delay", () => {
+	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.start_break", () => {
 		vscode.window.showInputBox({
-			title: "Enter Delay in minutes"
+			title: "Enter Break Time in minutes"
 		}).then((val) => {
 			if (isNaN(Number(val))) {
 				vscode.window.showErrorMessage("\"" + val + "\" is not a number");
 				return;
 			}
+			let break_time = Date.now() + (Number(val) * 60 * 1000);
 			activity_watcher.on_did_activity_action().then(() => {
-				activity_watcher.add_inactive_delay(Number(val)*60*1000).then((inactive_delay) => {
-					vscode.window.showInformationMessage("For the next " + inactive_delay / 60 / 1000 + " minutes you appear as active.");
-					update_status_bar_item(inactive_delay);
-					activity_watcher.check_activity();
+				activity_watcher.set_break_time(break_time).then(() => {
+					activity_watcher.check_activity().then(() => {
+						vscode.window.showInformationMessage("Break started.");
+					});
 				})
 			});
 		});
 	}));
-	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.clear_inactive_delay", () => {
+	context.subscriptions.push(vscode.commands.registerCommand("whoisworking.stop_break", () => {
 		activity_watcher.on_did_activity_action().then(() => {
-			activity_watcher.set_inactive_delay(0).then(() => {
-				update_status_bar_item(0);
-				vscode.window.showInformationMessage("Inactive Delay cleared.");
+			activity_watcher.set_break_time(Date.now()).then(() => {
+				activity_watcher.check_activity().then(() => {
+					vscode.window.showInformationMessage("Break stopped.");
+				});
 			});
 		});
 	}));
 
-	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(() => {activity_watcher.on_did_activity_action()}, activity_watcher));
-	context.subscriptions.push(vscode.workspace.onDidCreateFiles(() => {activity_watcher.on_did_activity_action()}, activity_watcher));
-	context.subscriptions.push(vscode.workspace.onDidDeleteFiles(() => {activity_watcher.on_did_activity_action()}, activity_watcher));
-	context.subscriptions.push(vscode.workspace.onDidRenameFiles(() => {activity_watcher.on_did_activity_action()}, activity_watcher));
-	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(() => {activity_watcher.on_did_activity_action()}, activity_watcher));
+	context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(() => { activity_watcher.on_did_activity_action() }, activity_watcher));
+	context.subscriptions.push(vscode.workspace.onDidCreateFiles(() => { activity_watcher.on_did_activity_action() }, activity_watcher));
+	context.subscriptions.push(vscode.workspace.onDidDeleteFiles(() => { activity_watcher.on_did_activity_action() }, activity_watcher));
+	context.subscriptions.push(vscode.workspace.onDidRenameFiles(() => { activity_watcher.on_did_activity_action() }, activity_watcher));
+	context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(() => { activity_watcher.on_did_activity_action() }, activity_watcher));
 	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(update_configuration));
 	update_activity_check_interval();
 }
 
-function update_status_bar_item(inactive_delay) {
-	status_bar_item.text = "$(clock) " + String(Math.ceil(inactive_delay/60/1000));
+function update_status_bar_item() {
+	if (conf.get("enabled")) {
+		status_bar_item.text = "$(cloud-upload)";
+		status_bar_item.tooltip = "Disable WhoIsWorking";
+	} else {
+		status_bar_item.text = "$(cloud)";
+		status_bar_item.tooltip = "Enable WhoIsWorking";
+	}
 	status_bar_item.show();
 }
 
-function deactivate() {}
+function deactivate() { }
 
 module.exports = {
 	activate,

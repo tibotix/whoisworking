@@ -4,22 +4,16 @@ class ActivityWatcher {
     constructor(server_api, inactive_timeout) {
         this.server_api = server_api;
         this.inactive_timeout = inactive_timeout;
+        this.last_activity_action = Date.now();
+        this.break_time = Date.now();
         this.mutex = new Mutex();
         this.enabled = true;
-        this.last_activity_action = Date.now();
-        this.inactive_delay = 0;
         this.message = "";
     }
 
-    disable() {
+    set_enabled(is_enabled) {
         return this.mutex.runExclusive(() => {
-            this.enabled = false;
-        });
-    }
-
-    enable() {
-        return this.mutex.runExclusive(() => {
-            this.enabled = true;
+            this.enabled = is_enabled;
         });
     }
 
@@ -29,19 +23,9 @@ class ActivityWatcher {
         });
     }
 
-    add_inactive_delay(inactive_delay) {
-        return new Promise((resolve, reject) => {
-            this.mutex.runExclusive(() => {
-                this.inactive_delay = Math.max(0, this.inactive_delay+inactive_delay);
-            }).then((_) => {
-                resolve(this.inactive_delay);
-            });
-        });
-    }
-
-    set_inactive_delay(inactive_delay) {
+    set_break_time(break_time) {
         return this.mutex.runExclusive(() => {
-            this.inactive_delay = inactive_delay;
+            this.break_time = break_time;
         });
     }
 
@@ -59,9 +43,10 @@ class ActivityWatcher {
 
     build_data() {
         const data = {
-            last_activity_action: Math.round(this.last_activity_action/1000)
+            last_activity_action: Math.round(this.last_activity_action / 1000),
+            break_time: Math.round(this.break_time / 1000)
         };
-        if (this.message !== ""){
+        if (this.message !== "") {
             data["message"] = this.message;
         }
         return data;
@@ -71,18 +56,17 @@ class ActivityWatcher {
         return new Promise((resolve, reject) => {
             if (!this.enabled) {
                 resolve();
+                return;
             }
             this.mutex.runExclusive(() => {
-                if( Date.now() - this.last_activity_action < this.inactive_timeout) {
-                    this.server_api.notify_heartbeat(this.build_data());
+                if (Date.now() - this.last_activity_action < this.inactive_timeout) {
+                    this.server_api.post_update(this.build_data());
                 }
             }).then((_) => {
                 resolve();
             });
         });
     }
-
-    
 }
 
 module.exports = {

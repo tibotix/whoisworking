@@ -53,6 +53,10 @@ if ($data === null){
         color: green;
     }
 
+    .break {
+        color: blue;
+    }
+
     .inactive {
         color: red;
     }
@@ -69,7 +73,9 @@ if ($data === null){
     foreach ($data as $key => $value) {
         $last_activity_action = $value->last_activity_action;
         echo "<p>" . htmlentities($key) . ": </p>";
-        if (time() - $last_activity_action >= $INACTIVE_TIMEOUT) {
+        if (time() <= $value->break_time) {
+            echo "<p class=\"break\">active | break</p>";
+        } else if (time() - $last_activity_action >= $INACTIVE_TIMEOUT) {
             echo "<p class=\"inactive\">inactive</p>";
         } else {
             echo "<p class=\"active\">active</p>";

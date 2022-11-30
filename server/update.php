@@ -34,7 +34,7 @@ function getBasicToken() {
 }
 
 $_POST = json_decode(file_get_contents("php://input"), true);
-if (!isset($_POST["last_activity_action"])) {
+if (!isset($_POST["last_activity_action"]) || !isset($_POST["break_time"])) {
     die();
 }
 
