@@ -13,7 +13,7 @@ function update_activity_check_interval() {
 		clearInterval(activity_check_interval);
 	}
 	activity_check_interval = setInterval(() => {
-		activity_watcher.check_activity();
+		activity_watcher.check_activity().catch(() => { });
 	}, conf.get("checkActivityTime") * 1000);
 }
 
