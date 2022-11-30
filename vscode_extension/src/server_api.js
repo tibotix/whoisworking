@@ -24,7 +24,11 @@ class ServerAPI {
                     headers: { "Content-Type": "application/json", "Authorization": this.auth_header }
                 }).then((response) => {
                     this.connectivity_status = response.ok;
-                    resolve();
+                    if (response.ok) {
+                        resolve();
+                    } else {
+                        reject();
+                    }
                 }).catch((reason) => {
                     this.connectivity_status = false;
                     reject(reason);
