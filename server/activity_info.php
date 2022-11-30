@@ -1,6 +1,6 @@
 <?php
 
-$INACTIVE_TIMEOUT = 20;
+$INACTIVE_TIMEOUT = 600;
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     die();

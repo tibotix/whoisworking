@@ -2,7 +2,7 @@
   "name": "whoisworking",
   "displayName": "WhoIsWorking",
   "description": "VSCode Extension to watch activity status of team members.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "Tibotix",
   "engines": {
     "vscode": "^1.73.0"
@@ -88,7 +88,7 @@
         },
         "whoisworking.checkActivityTime": {
           "type": "number",
-          "default": 120,
+          "default": 300,
           "description": "The interval time in seconds to check for actiity and notify updates"
         }
       }
