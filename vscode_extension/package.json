@@ -2,7 +2,7 @@
   "name": "whoisworking",
   "displayName": "WhoIsWorking",
   "description": "VSCode Extension to watch activity status of team members.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "publisher": "Tibotix",
   "engines": {
     "vscode": "^1.73.0"
