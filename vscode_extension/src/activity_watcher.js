@@ -53,16 +53,22 @@ class ActivityWatcher {
     }
 
     check_activity() {
-        return new Promise((resolve, reject) => {
-            if (!this.enabled) {
-                resolve();
-                return;
-            }
-            this.mutex.runExclusive(() => {
-                if (Date.now() - this.last_activity_action < this.inactive_timeout) {
-                    this.server_api.post_update(this.build_data());
+        this.mutex.runExclusive(() => {
+            return new Promise((resolve, reject) => {
+                if (!this.enabled) {
+                    resolve();
+                    return;
                 }
-            }).then((_) => {
+                if (Date.now() - this.last_activity_action < this.inactive_timeout) {
+                    this.server_api.post_update(
+                        this.build_data()
+                    ).then(() => {
+                        resolve();
+                    }).catch((reason) => {
+                        reject(reason);
+                    });
+                    return;
+                }
                 resolve();
             });
         });

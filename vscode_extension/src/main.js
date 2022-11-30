@@ -74,6 +74,8 @@ function activate(context) {
 				activity_watcher.set_message(val).then(() => {
 					activity_watcher.check_activity().then(() => {
 						vscode.window.showInformationMessage("Message set successfully.");
+					}).catch((_) => {
+						vscode.window.showErrorMessage("Could not set message. Please review your extension settings.");
 					});
 				});
 			});
@@ -84,6 +86,8 @@ function activate(context) {
 			activity_watcher.set_message("").then(() => {
 				activity_watcher.check_activity().then(() => {
 					vscode.window.showInformationMessage("Message cleared.");
+				}).catch((_) => {
+					vscode.window.showErrorMessage("Could not clear message. Please review your extension settings.");
 				});
 			});
 		});
@@ -105,6 +109,8 @@ function activate(context) {
 				activity_watcher.set_break_time(break_time).then(() => {
 					activity_watcher.check_activity().then(() => {
 						vscode.window.showInformationMessage("Break started.");
+					}).catch((_) => {
+						vscode.window.showErrorMessage("Could not start Break. Please review your extension settings.");
 					});
 				})
 			});
@@ -115,6 +121,8 @@ function activate(context) {
 			activity_watcher.set_break_time(Date.now()).then(() => {
 				activity_watcher.check_activity().then(() => {
 					vscode.window.showInformationMessage("Break stopped.");
+				}).catch((_) => {
+					vscode.window.showErrorMessage("Could not stop Break. Please review your extension settings.");
 				});
 			});
 		});
