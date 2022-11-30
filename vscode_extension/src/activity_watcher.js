@@ -53,7 +53,7 @@ class ActivityWatcher {
     }
 
     check_activity() {
-        this.mutex.runExclusive(() => {
+        return this.mutex.runExclusive(() => {
             return new Promise((resolve, reject) => {
                 if (!this.enabled) {
                     resolve();
